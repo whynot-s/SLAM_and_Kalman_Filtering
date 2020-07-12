@@ -1,10 +1,3 @@
-Run setup.m
-
-This system has not been tested with sparseinv as it sometimes caused problems.
-Do not use sparseinv.
-
-
-
 G2o Core Library used throughout. My main contribution is within the new SLAM system itself - this is
 seen in the following directory:
 
@@ -14,6 +7,7 @@ The above contains both the Kalman Filter system and the SLAM system,
 as well as the VehicleSLAMSystem.m executable.
 
 All other code is part of the G2o Library and adjusted by Simon Julier, UCL.
+Additionally, this code was written in collaboration with Esmeralda Ypsilanti, UCL.
 
 
 The SLAM code features additional custom edges (binary and unary) as well
@@ -27,10 +21,18 @@ on my website, which is given below:
 **********INSERT WEBSITE**************
 
 
-Read below first - make sure that all flags are set to 0 before attempting the tasks which are not Part 4.
+Read below before running - make sure that all flags are set to 0 before attempting the tasks which are not Part 4.
 
 All flags can be found in the G20SLAMSystem.m file,
 in the property constructor section (near the top).
+
+
+Run setup.m
+
+This system has not been tested with sparseinv as it sometimes caused problems.
+Do not use sparseinv.
+
+A description of the different tasks is given below:
 
 Part 1: Use pure Vehicle Odometry and compare the Kalman Filter and SLAM systems.
 
