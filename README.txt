@@ -18,7 +18,7 @@ below and in the code.
 I have written some more analysis on the system and its results (including graphical comparisons)
 on my website, which is given below:
 
-**********INSERT WEBSITE**************
+https://rdanks.wixsite.com/raydanks/post/slam-and-kalman-filtering
 
 
 Read below before running - make sure that all flags are set to 0 before attempting the tasks which are not Part 4.
