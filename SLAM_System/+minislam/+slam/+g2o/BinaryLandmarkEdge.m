@@ -22,7 +22,8 @@ classdef BinaryLandmarkEdge < g2o.core.BaseBinaryEdge %this is adapted from the 
             this.errorZ(1) = norm(estimate_difference)-z(1); %first measurment gives norm of difference between landmark and vertex
 
             estimated_b = atan2(landmark_state(2)-x(2),landmark_state(1)-x(1))-x(3); %this will be compared to the measured b
-            this.errorZ(2) = g2o.stuff.normalize_theta(estimated_b-z(2)); %second measurement is bearing measurement, difference between estimated and measured
+            this.errorZ(2) = g2o.stuff.normalize_theta(estimated_b-z(2)); 
+            %second measurement is bearing measurement, difference between estimated and measured
 
         end
         
@@ -34,7 +35,8 @@ classdef BinaryLandmarkEdge < g2o.core.BaseBinaryEdge %this is adapted from the 
             x = this.edgeVertices{1}.estimate();
             landmark_state = this.edgeVertices{2}.estimate();
             dx = landmark_state - x(1:2);
-            r = norm(dx)+1e-7; %well this is initially 0 if landmark vertex is initialised at vehicle position, therefore that may be messing the jacobian!
+            r = norm(dx)+1e-7; 
+            %this is initially 0 if landmark vertex is initialised at vehicle position, therefore that may be messing the jacobian!
             
             this.J{1} = ...
                 [-dx(1)/r -dx(2)/r 0;

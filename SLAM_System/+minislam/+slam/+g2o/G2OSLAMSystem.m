@@ -138,7 +138,8 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
         end
         
         
-        function [previous_connection_indices, next_connection_indices] = Maintain_Connectivity(this,i) %this is used in conjunction with below, to find the edges which connect the graph
+        function [previous_connection_indices, next_connection_indices] = Maintain_Connectivity(this,i) 
+            %this is used in conjunction with below, to find the edges which connect the graph
             if i == 1
                 previous_vertex = this.vehicleVertices{i}; %won't hit any common landmarks anyway because it doesn't connect to any.
             else
@@ -228,7 +229,7 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
             amount_of_vertices = length(vertices);
             
             for i = 1:amount_of_vertices
-                if i == 5666 %%%%%%%%%%%REMEMBER TO DELETE!
+                if i == 5666 %Quality/Operations check
                     disp("stop")
                 end
                 if i == 1
@@ -312,14 +313,6 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
                         safe_edges = [safe_edges next_connection_indices(1)];
                     end
                 end
-
-
-            %WITH THE ABOVE CONNECTIVITY CHECK, THE SYSTEM OF JUST
-            %ADDING THE LAST TWO EDGES AS SAFE IF THERE ARE NOT AT
-            %LEAST 2 SAFE EDGES IS PROBABLY NOT NEEDED AND THUS
-            %SUBOPTIMAL, BUT KEEPING IT IN NOW FOR TESTING AND
-            %POTENTIAL STABILITY.
-                
                 
                 %now we have defined the edges which MUST be saved
                 %NOTE THAT THESE ARE JUST DEFINED IN THE ORDER WHICH THEY
@@ -392,14 +385,7 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
                 end
                 %confirmed that the above only leaves X edges remaining on
                 %each landmark!
-
-
-%                 disp("amount of edges attached - landmark number: ")
-%                 disp(j)
-%                 disp(this.landmarksMap(j).edges)
-                
             end
-            %error("stop in random pruning")
         end
         
         
@@ -412,7 +398,8 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
         % solutions as more information becomes available over time.
         function optimize(this, maximumNumberOfOptimizationSteps)
             if this.Remove_Odometry_Flag == 1
-                this.Remove_Odometry(1); %INPUT IS THE AMOUNT OF EDGES TO KEEP, UNFORTUNATELY MATLAB DOES NOT ALLOW LABELLING WITHIN FUNCTION CALL
+                this.Remove_Odometry(1); 
+                %input (1) is the amount of edges to keep
             end
             if this.Random_Graph_Pruning_Flag == 1
                 this.Random_Graph_Pruning(10); %input is amount of edges to keep PER LANDMARK.
@@ -440,8 +427,6 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
             [xS, PS] = this.graph.computeMarginals(this.currentVehicleVertex);
             x=full(xS);
             P=full(PS);
-%             disp("P: ")
-%             disp(P)
             
         end
         
@@ -457,8 +442,7 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
             % Copy the outputs over
             for v = 1 : this.vehicleVertexId
                 
-             %DELVING INTO ONE PARTICULAR VETREX
-                %disp(this.vehicleVertexId)
+             %DELVING INTO ONE PARTICULAR VERTEX
             if v == 100000 %this code can be used to pause the code at a certain vertex, for debugging purposes
                 disp("vehicle vertex")
                 disp(v)
@@ -501,16 +485,12 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
                         disp(P(:,v))
                         disp("Current Vehicle Vertex:")
                         disp(v) %this high covariance is detected on THIS vertex
-                        %disp(this.vehicleVertices{v})
-
 
                         disp("next vehicle vertex")
                         disp(v+1) %this high covariance is detected on THIS vertex
-                        %disp(this.vehicleVertices{v+1})
 
                         disp("previous vehicle vertex")
                         disp(v-1) %this high covariance is detected on THIS vertex
-                        %disp(this.vehicleVertices{v-1})
 
                         % so, we must print out the landmarks which  each vertex
                         % connects to, to check bisection
@@ -532,14 +512,10 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
 
                         for i = 1:length(vertices_to_loop) %go through all three
                             edges = vertices_to_loop(i).edges;
-%                             disp("edges")
-%                             disp(edges)
                             amount_of_edges = length(edges);
                             for j = 1:amount_of_edges
                                 current_edge_cell = edges(j);
                                 current_edge = current_edge_cell{1};
-%                                 disp("current edge")
-%                                 disp(current_edge)
                                 is_it_landmark_edge = isa(current_edge,'minislam.slam.g2o.BinaryLandmarkEdge');
                                 if is_it_landmark_edge == 1
                                     current_landmark_vertex = current_edge.vertices{2};
@@ -575,7 +551,7 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
                         disp("next next vertex landmarks")
                         disp(next_next_vertex_landmarks)
                         
-                        keyboard %should pause?
+                        keyboard %should pause
                     end
                     
                     
@@ -583,8 +559,6 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
                     
                 end
             end
-            %disp("P: ")
-            %disp(P)
         end
         
         % Return the means and covariances of the landmark estimates. These
@@ -602,7 +576,7 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
             [xS, PS] = this.graph.computeMarginals();
             
             for l = 1 : numberOfLandmarks
-                landmarkIds(l) = landmarkVertices{l}.landmarkId(); %this ells us that we need a property of the landmarkVertex for landmarkId
+                landmarkIds(l) = landmarkVertices{l}.landmarkId(); 
                 idx = landmarkVertices{l}.hessianIndex();
                 x(:, l) = full(xS(idx));
                 if (isempty(idx == true))
@@ -625,28 +599,20 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
             % Add the first vertex and the initial condition edge
             this.currentVehicleVertex = minislam.slam.g2o.VehicleStateVertex(this.currentTime);
             this.currentVehicleVertex.setEstimate(event.data);
-%             disp("vehicle vertex properties")
-%             disp(properties(this.currentVehicleVertex))
-%             disp("event.data in first event")
-%             disp(event.data)
-%             disp("properties of this")
-%             disp(this)
             this.currentVehicleVertex.setFixed(true);
             this.graph.addVertex(this.currentVehicleVertex);
             this.vehicleVertexId = 1;
             this.vehicleVertices{this.vehicleVertexId} = this.currentVehicleVertex;
        end
        
-        function handleNoPrediction(~) %tilde means ignore the input argument ..
+        function handleNoPrediction(~) %tilde means ignore the input argument
             % Nothing to do
             % if there is no prediction, then there is no vertex which
-            % needs to be added ?
-            % it says we need to implement this though ??
+            % needs to be added 
         end
         
         function handlePredictToTime(this, time, dT)
-            %g20 slam system has many properties, including the u input! -
-            %check disp(this) for the link!
+            %g20 slam system has many properties, including the u input! 
             % Create the next vehicle vertex and add it to the graph
             this.currentVehicleVertex = minislam.slam.g2o.VehicleStateVertex(time);
             this.graph.addVertex(this.currentVehicleVertex);
@@ -661,17 +627,13 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
             M = [cos(previous_bearing),-sin(previous_bearing),0;
                  sin(previous_bearing),cos(previous_bearing),0;
                  0,0,1];
-            
-            %We do not have the odometry vector for this system,
-            %I assume as our measurement we need to sue dT in some way?
 
             u = this.u;
-            %u = [1 0 pi/180].';
             Q = this.uCov;
             v = randn(3,1); %just zero mean (Unit variance) gaussian noise!
             x_predicted = previousX; %JUST FOR THE SHAPE REALLY
             x_predicted = x_predicted+dT*M*u;
-            x_predicted(3) = g2o.stuff.normalize_theta(x_predicted(3)); %correct ?? %%%%%%%%%
+            x_predicted(3) = g2o.stuff.normalize_theta(x_predicted(3));
                
             this.currentVehicleVertex.setEstimate(x_predicted) %the prediction is just a 3x1 matrix - X,Y,Angle 
             
@@ -693,10 +655,7 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
         function handleGPSObservationEvent(this, event)
             
             % Handle a GPS measurement
-%             disp("event")
-%             disp(event)
-%             disp("event.data")
-%             disp(event.data)
+
             %event.data is the GPS readings
             
             %event.covariance allows for the calculation of covariance
@@ -710,35 +669,18 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
             GPS_edge.setMeasurement(event.data);
             GPS_edge.setInformation(omegaR);
             this.graph.addEdge(GPS_edge);
-            %error('handleGPSObservationEvent: implement me');
         end
         
         function handleLandmarkObservationEvent(this, event)
             
             % Iterate over all the landmark measurements
             for l = 1 : length(event.landmarkIds)
-%                 disp("this")
-%                 disp(this)
-%                 disp("landmarks map:")
-%                 disp(this.landmarksMap)
-                
                 % Get the landmark vertex associated with this measurement.
                 % If necessary, a new landmark vertex is created and added
                 % to the graph.
                 [landmarkVertex, newVertexCreated] = this.createOrGetLandmark(event.landmarkIds(l));
                 z = event.data(:, l); %I believe that this is the measurement from the vehicle to the landmark.
-%                 disp("event")
-%                 disp(event)
-%                 disp("event.covariance")
-%                 disp(event.covariance(:,l))
-%                 disp("event.landmarkIds")
-%                 disp(event.landmarkIds(:,l))
-%                 
-%                 
-%                 disp("event.data")
-%                 disp(event.data(:,l))
-%                 disp("z.landmarkId")
-%                 disp(z.landmarkId)
+
                 %so z is the measurement from the platform to THIS
                 %individual landmark.
                 
@@ -753,50 +695,32 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
                     
                     
                 platform_position_and_bearing = this.vehicleVertices{this.vehicleVertexId}.estimate();
-%                 disp("platform_position_and_bearing")
-%                 disp(platform_position_and_bearing)       
+    
                 
-            if newVertexCreated == 1 %if the system is only just created, give it an iniital estimate
+            if newVertexCreated == 1 %if the system is only just created, give it an initial estimate
                     %after this initial estimate, we only add edges which
                     %which eventually lead to a better value
                   
                 %landmarkVertex.setEstimate(platform_position_and_bearing(1:2)); %INITIALLY estimate the landmark at the vehicle position
-                landmarkVertex.setEstimate([0;0]);
-%                 disp("landmark: ")
-%                 disp(landmarkVertex)
-%                 disp(landmarkVertex.estimate())
-                %error("stop")
+                landmarkVertex.setEstimate([0;0]); %instantiating at vehicle position gets stuck in local minima
             end
                 
                 %add the binary Edge - must be binary to use vehicle info
                 %and estimate landmark position
                 landmark_edge = minislam.slam.g2o.BinaryLandmarkEdge();
                 landmark_edge.setVertex(1,this.vehicleVertices{this.vehicleVertexId}); %current vehicle position
-                landmark_edge.setVertex(2,this.landmarksMap(event.landmarkIds(l))); %returning this landmark from the map, even though it's not in the graph ?? 
+                landmark_edge.setVertex(2,this.landmarksMap(event.landmarkIds(l)));
                 landmark_edge.setMeasurement(z) %REAL measurement!
                 
                 %since we are now using the REAL measurement (rather than
                 %processing it to send to the edge), we can use the real
                 %measurement covariance.
                 
-                %R = diag(event.covariance(:, l)); %this current landmark observation's covariance
-                %MAY NEED TO CHANGE THIS TO DIAGONAL MATRIX!
-%                 disp("R: ")
-%                 disp(R)
-                %R = diag([1,1]);
-                R = event.covariance;
-                omegaR = inv(R);
-                
-                
+                R = event.covariance;  %this current landmark observation's covariance
+                omegaR = inv(R);          
                 landmark_edge.setInformation(omegaR)
-                this.graph.addEdge(landmark_edge);
-                
-%                 disp("landmarks map")
-%                 disp(this.landmarksMap)
-                %error('handleLandmarkObservationEvent: implement me');
-                
-            end
-                
+                this.graph.addEdge(landmark_edge);               
+            end        
         end
    end
     
@@ -819,30 +743,8 @@ classdef G2OSLAMSystem < minislam.slam.VehicleSLAMSystem
             newVertexCreated = true;
             
             %we have created the vertex now, so we must surely  add it to
-            %the graph too
-            
-            
-            %the problem is, we are adding vertex to the Map but not the
-            %graph.
-            %this.graph.addVertex(landmarkVertex)
-            
-            
-            %disp("landmark map before addition")
-            %disp(this.landmarksMap)
-            this.landmarksMap(landmarkId) = landmarkVertex; %this assigns the landmark to the actual map. (count should go up)
-            %disp("landmark map after addition")
-            
-            %error("stop")
-            
-            
-            
-            %don't need to set the value of the landmark here, just return
-            %it.
-            
-            
-            %error('createOrGetLandmark: implement me');
-            
-        end
-                
+            %the graph too        
+            this.landmarksMap(landmarkId) = landmarkVertex; %this assigns the landmark to the actual map. (count should go up)               
+        end       
     end
 end

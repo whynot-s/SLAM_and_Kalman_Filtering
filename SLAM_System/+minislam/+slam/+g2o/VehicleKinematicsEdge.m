@@ -52,18 +52,6 @@ classdef VehicleKinematicsEdge < g2o.core.BaseBinaryEdge
         end
         
         function computeError(this)
-%             disp("in compute error, this.z:")
-%             disp(this.z)
-%             disp("this:")
-%             disp(this)
-%             % Compute the error and put it in this.errorZ
-            %the below has already defined one another.
-%             this.initialize()
-%             this.errorZ = (this.edgeVertices{2}.x - this.edgeVertices{1}.x) - this.z;
-%             %this.errorZ = this.z - (this.edgeVertices{1}.x - this.edgeVertices{2}.x);
-%             %Wrap the heading error to -pi to pi
-%             this.errorZ(3) = g2o.stuff.normalize_theta(this.errorZ(3));
-
              % Rotation matrix from prior state
             this.initialize();
             priorX = this.edgeVertices{1}.x;

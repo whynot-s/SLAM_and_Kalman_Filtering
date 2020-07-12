@@ -20,14 +20,12 @@ classdef LandmarkVertex < g2o.core.BaseVertex
         
         
         function oplus(this, update)
-        %probably won't be used because the landmark does not have
-        %orientation ...
             % Add the update
             this.x = this.x + update;
             
             % Wrap the angle to [-pi,pi]
-            %this.x(3) = g2o.stuff.normalize_theta(this.x(3)); %unneeded as
-            %there is no orientation data for the landmarks
+            %this.x(3) = g2o.stuff.normalize_theta(this.x(3)); 
+            %unneeded as there is no orientation data for the landmarks
         end
     end
 end
